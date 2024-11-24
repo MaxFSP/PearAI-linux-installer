@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=PearAI
+Comment=Launch PearAI Application
+GenericName=Application
+Exec=/usr/bin/PearAI %F
+Icon=/usr/share/icons/hicolor/256x256/apps/pearAI.png
+Type=Application
+Categories=Utility;Application;
+MimeType=application/x-pearai;
+StartupWMClass=PearAI
+Version=1.5.0
