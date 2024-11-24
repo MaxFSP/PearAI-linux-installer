@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=PearAI - URL Handler
+Comment=Handle PearAI custom URLs
+Exec=/usr/bin/PearAI --open-url %U
+Icon=/usr/share/icons/hicolor/256x256/apps/pearAI.png
+Type=Application
+NoDisplay=true
+MimeType=x-scheme-handler/pearai;
+StartupWMClass=PearAI
+Version=1.5.0
