@@ -125,52 +125,66 @@ uninstall_pearai() {
 
 # Function to install PearAI on NixOS
 install_pearai_nixos() {
-  log "Starting NixOS installation"
+    log "Starting NixOS installation"
 
-  bash "check_steam-run.sh"
-  local check_result=$?
+    # Check and install steam-run first
+    bash "nixos/scripts/check_steam-run.sh"
+    local check_result=$?
 
-  if [ $check_result -ne 0 ]; then
-      log "Steam-run check failed"
-      return 1
-  fi
+    if [ $check_result -ne 0 ]; then
+        log "Steam-run check failed, attempting installation"
+        bash "nixos/scripts/install_steam-run.sh"
+        check_result=$?
+        if [ $check_result -ne 0 ]; then
+            log "Steam-run installation failed"
+            return 1
+        fi
+    fi
 
-  #modify_nixos_config
-  local install_result=$?
+    # Install PearAI
+    clear
+    bash "nixos/scripts/install_pearai.sh"
+    local install_result=$?
 
-  if [ $install_result -eq 0 ]; then
-      log "PearAI NixOS installation completed successfully"
-      echo "Please rebuild NixOS configuration with: sudo nixos-rebuild switch"
-      clear
-      bash "nixos/scripts/install_pearai.sh"
-      return 0
-  else
-      log "NixOS installation failed"
-      echo "Installation failed. Check the logs for details."
-      return 1
-  fi
+    if [ $install_result -eq 0 ]; then
+        log "PearAI NixOS installation completed successfully"
+        return 0
+    else
+        log "NixOS installation failed"
+        echo "Installation failed. Check the logs for details."
+        return 1
+    fi
 }
 
 # Function to uninstall PearAI from NixOS
 uninstall_pearai_nixos() {
-  echo "Are you sure you want to uninstall PearAI from NixOS? (y/N)"
-  read -r confirm
-  if [[ $confirm =~ ^[Yy]$ ]]; then
-      log "Starting NixOS uninstallation"
-      clear
-      bash "nixos/scripts/uninstall_pearai.sh"
-      local result=$?
-      if [ $result -eq 0 ]; then
-          log "PearAI NixOS uninstallation completed successfully"
-          return 0
-      else
-          log "NixOS uninstallation failed"
-          return 1
-      fi
-  else
-      log "NixOS uninstallation cancelled by user"
-      return 1
-  fi
+    echo "Are you sure you want to uninstall PearAI from NixOS? (y/N)"
+    read -r confirm
+    if [[ $confirm =~ ^[Yy]$ ]]; then
+        log "Starting NixOS uninstallation"
+        clear
+        bash "nixos/scripts/uninstall_pearai.sh"
+        local result=$?
+        
+        if [ $result -eq 0 ]; then
+            log "PearAI NixOS uninstallation completed successfully"
+            
+            # Ask about steam-run uninstallation
+            echo "Would you like to uninstall steam-run as well? (y/N)"
+            read -r steam_confirm
+            if [[ $steam_confirm =~ ^[Yy]$ ]]; then
+                bash "nixos/scripts/uninstall_steam-run.sh"
+            fi
+            
+            return 0
+        else
+            log "NixOS uninstallation failed"
+            return 1
+        fi
+    else
+        log "NixOS uninstallation cancelled by user"
+        return 1
+    fi
 }
 
 # Trap for clean exit
