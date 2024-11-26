@@ -8,4 +8,4 @@ Type=Application
 Categories=Utility;Application;
 MimeType=application/x-pearai;
 StartupWMClass=PearAI
-Version=1.5.0
+Version=1.5.2
