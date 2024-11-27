@@ -1,0 +1,12 @@
+Place your PearAI source files here (.tar.gz format)
+------------------------------------------------
+
+This directory should contain the PearAI application source files in .tar.gz format.
+Before running the installation script, please ensure:
+
+1. You have obtained the official PearAI application files
+2. The files are compressed in .tar.gz format
+3. The archive is named "PearAI.tar.gz" (case-sensitive)
+
+Note: The source_files_in_tar.txt file is just a placeholder and should be replaced
+with the actual PearAI.tar.gz file containing the application binaries and dependencies.

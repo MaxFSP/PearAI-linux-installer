@@ -4,10 +4,15 @@ Simple installation scripts and utilities for setting up PearAI on Linux systems
 
 ## Quick Start
 
-1. Run the installation script:
+1. Make the installation script executable:
 ```bash
-./scripts/install_pearai.sh
+chmod +x ./pearai_manager.sh
 ```
+2. Run the installation script:
+```bash
+./pearai_manager.sh
+```
+
 ## What's Included
 
 - Automated installation/uninstallation scripts
