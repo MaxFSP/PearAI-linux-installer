@@ -5,6 +5,15 @@ source "$(dirname "\$0")/scripts/utils.sh"
 
 ensure_log_file
 
+is_nixos() {
+    if [ -f "/etc/NIXOS" ]; then
+        return 0  # true
+    else
+        return 1  # false
+    fi
+}
+
+
 # Function to modify NixOS configuration
 modify_nixos_config() {
   local config_file="/etc/nixos/configuration.nix"
@@ -47,17 +56,23 @@ show_help() {
 
 # Function to display the main menu
 display_menu() {
-  clear
-  echo "================================"
-  echo "    PearAI Manager v$PEARAI_VERSION"
-  echo "================================"
-  echo "1. Install PearAI"
-  echo "2. Uninstall PearAI"
-  echo "3. Install PearAI on NixOS"
-  echo "4. Uninstall PearAI from NixOS"
-  echo "5. Exit"
-  echo "================================"
-  echo -n "Enter your choice [1-5]: "
+    clear
+    echo "================================"
+    echo "    PearAI Manager v$PEARAI_VERSION"
+    echo "================================"
+    if is_nixos; then
+        echo "1. Install PearAI on NixOS"
+        echo "2. Uninstall PearAI from NixOS"
+        echo "3. Exit"
+        echo "================================"
+        echo -n "Enter your choice [1-3]: "
+    else
+        echo "1. Install PearAI"
+        echo "2. Uninstall PearAI"
+        echo "3. Exit"
+        echo "================================"
+        echo -n "Enter your choice [1-3]: "
+    fi
 }
 
 # Function to install PearAI
@@ -66,6 +81,7 @@ install_pearai() {
   if [ "$EUID" -ne 0 ]; then
       sudo bash "$(dirname "\$0")/scripts/install_pearai.sh"
   else
+      clear
       bash "$(dirname "\$0")/scripts/install_pearai.sh"
   fi
 
@@ -89,6 +105,7 @@ uninstall_pearai() {
       if [ "$EUID" -ne 0 ]; then
           sudo bash "$(dirname "\$0")/scripts/uninstall_pearai.sh"
       else
+          clear
           sudo bash "$(dirname "\$0")/scripts/uninstall_pearai.sh"
       fi
 
@@ -124,6 +141,7 @@ install_pearai_nixos() {
   if [ $install_result -eq 0 ]; then
       log "PearAI NixOS installation completed successfully"
       echo "Please rebuild NixOS configuration with: sudo nixos-rebuild switch"
+      clear
       bash "nixos/scripts/install_pearai.sh"
       return 0
   else
@@ -139,6 +157,7 @@ uninstall_pearai_nixos() {
   read -r confirm
   if [[ $confirm =~ ^[Yy]$ ]]; then
       log "Starting NixOS uninstallation"
+      clear
       bash "nixos/scripts/uninstall_pearai.sh"
       local result=$?
       if [ $result -eq 0 ]; then
@@ -191,33 +210,47 @@ esac
 
 # Main loop
 while true; do
-  display_menu
-  read -r choice
+    display_menu
+    read -r choice
 
-  case $choice in
-      1)
-          install_pearai
-          ;;
-      2)
-          uninstall_pearai
-          ;;
-      3)
-          install_pearai_nixos
-          ;;
-      4)
-          uninstall_pearai_nixos
-          ;;
-      5)
-          echo "Exiting PearAI Manager. Goodbye!"
-          log "PearAI Manager exited normally"
-          exit 0
-          ;;
-      *)
-          echo "Invalid option. Please try again."
-          log "Invalid option selected"
-          ;;
-  esac
+    if is_nixos; then
+        case $choice in
+            1)
+                install_pearai_nixos
+                ;;
+            2)
+                uninstall_pearai_nixos
+                ;;
+            3)
+                echo "Exiting PearAI Manager. Goodbye!"
+                log "PearAI Manager exited normally"
+                exit 0
+                ;;
+            *)
+                echo "Invalid option. Please try again."
+                log "Invalid option selected"
+                ;;
+        esac
+    else
+        case $choice in
+            1)
+                install_pearai
+                ;;
+            2)
+                uninstall_pearai
+                ;;
+            3)
+                echo "Exiting PearAI Manager. Goodbye!"
+                log "PearAI Manager exited normally"
+                exit 0
+                ;;
+            *)
+                echo "Invalid option. Please try again."
+                log "Invalid option selected"
+                ;;
+        esac
+    fi
 
-  echo
-  read -p "Press Enter to continue..."
+    echo
+    read -p "Press Enter to continue..."
 done

@@ -3,7 +3,7 @@
 # PearAI Configuration File
 
 # PearAI version and package name
-PEARAI_VERSION="1.5.0"
+PEARAI_VERSION="1.5.2"
 PKG_NAME="PearAI"
 
 # Get script directory
